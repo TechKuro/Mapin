@@ -1,4 +1,4 @@
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback } from 'react';
 import {
   ReactFlow,
   Background,
@@ -10,8 +10,6 @@ import {
   useReactFlow,
   ReactFlowProvider,
   type Connection,
-  type Edge,
-  BackgroundVariant,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import ShapePalette, { type ShapeType } from './components/ShapePalette';
@@ -58,7 +56,6 @@ let id = 3;
 const getId = () => `${++id}`;
 
 const FlowCanvas = () => {
-  const reactFlowWrapper = useRef<HTMLDivElement>(null);
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const { screenToFlowPosition } = useReactFlow();
@@ -131,7 +128,7 @@ const FlowCanvas = () => {
         <ShapePalette onShapeSelect={onShapeSelect} />
         
         {/* Canvas Area */}
-        <div className="flex-1" ref={reactFlowWrapper}>
+        <div className="flex-1">
           <ReactFlow
             nodes={nodes}
             edges={edges}
@@ -147,7 +144,7 @@ const FlowCanvas = () => {
             connectionLineType="smoothstep"
             defaultEdgeOptions={{ type: 'smoothstep' }}
           >
-            <Background variant={BackgroundVariant.Dots} gap={20} size={1} />
+            <Background variant="dots" gap={20} size={1} />
             <Controls />
             <MiniMap 
               nodeStrokeColor="#374151"
