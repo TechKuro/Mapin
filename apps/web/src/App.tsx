@@ -10,6 +10,8 @@ import {
   useReactFlow,
   ReactFlowProvider,
   type Connection,
+  type Node,
+  type Edge,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import ShapePalette, { type ShapeType } from './components/ShapePalette';
@@ -61,7 +63,7 @@ const FlowCanvas = () => {
   const { screenToFlowPosition } = useReactFlow();
 
   const onConnect = useCallback(
-    (params: Connection) => setEdges((eds) => addEdge(params, eds)),
+    (params: Connection) => setEdges((eds: Edge[]) => addEdge(params, eds)),
     [setEdges]
   );
 
@@ -92,7 +94,7 @@ const FlowCanvas = () => {
         data: { label: `${shapeType.charAt(0).toUpperCase() + shapeType.slice(1)} ${id}` },
       };
 
-      setNodes((nds) => nds.concat(newNode));
+      setNodes((nds: Node[]) => nds.concat(newNode));
     },
     [screenToFlowPosition, setNodes]
   );
@@ -104,8 +106,53 @@ const FlowCanvas = () => {
       position: { x: Math.random() * 400 + 200, y: Math.random() * 400 + 200 },
       data: { label: `${shapeType.charAt(0).toUpperCase() + shapeType.slice(1)} ${id}` },
     };
-    setNodes((nds) => nds.concat(newNode));
+    setNodes((nds: Node[]) => nds.concat(newNode));
   }, [setNodes]);
+
+  const handleSave = useCallback(() => {
+    const flowData = {
+      nodes,
+      edges,
+    };
+    const jsonString = JSON.stringify(flowData, null, 2);
+    const blob = new Blob([jsonString], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'process-map.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }, [nodes, edges]);
+
+  const handleLoad = useCallback(() => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'application/json';
+    input.onchange = (event) => {
+      const file = (event.target as HTMLInputElement).files?.[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          try {
+            const loadedData = JSON.parse(e.target?.result as string);
+            setNodes(loadedData.nodes);
+            setEdges(loadedData.edges);
+          } catch (error) {
+            console.error('Error loading flow data:', error);
+          }
+        };
+        reader.readAsText(file);
+      }
+    };
+    input.click();
+  }, [setNodes, setEdges]);
+
+  const handleReset = useCallback(() => {
+    setNodes(initialNodes);
+    setEdges(initialEdges);
+  }, [setNodes, setEdges, initialNodes, initialEdges]);
 
   return (
     <div className="h-screen w-screen bg-gray-50 flex flex-col">
@@ -113,11 +160,14 @@ const FlowCanvas = () => {
       <div className="bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
         <h1 className="text-xl font-semibold text-gray-900">Mapin - Process Mapper</h1>
         <div className="flex gap-2">
-          <button className="px-3 py-1.5 text-sm bg-blue-600 text-white rounded hover:bg-blue-700">
+          <button onClick={handleSave} className="px-3 py-1.5 text-sm bg-blue-600 text-white rounded hover:bg-blue-700">
             Save
           </button>
-          <button className="px-3 py-1.5 text-sm bg-gray-600 text-white rounded hover:bg-gray-700">
+          <button onClick={handleLoad} className="px-3 py-1.5 text-sm bg-gray-600 text-white rounded hover:bg-gray-700">
             Load
+          </button>
+          <button onClick={handleReset} className="px-3 py-1.5 text-sm bg-red-600 text-white rounded hover:bg-red-700">
+            Reset
           </button>
         </div>
       </div>
