@@ -44,13 +44,13 @@ const initialEdges = [
     id: 'e1-2',
     source: '1',
     target: '2',
-    type: 'smoothstep',
+    type: 'step',
   },
   {
     id: 'e2-3',
     source: '2',
     target: '3',
-    type: 'smoothstep',
+    type: 'step',
   },
 ];
 
@@ -191,8 +191,8 @@ const FlowCanvas = () => {
             fitView
             snapToGrid
             snapGrid={[20, 20]}
-            connectionLineType="smoothstep"
-            defaultEdgeOptions={{ type: 'smoothstep' }}
+            connectionLineType="step"
+            defaultEdgeOptions={{ type: 'step' }}
           >
             <Background variant="dots" gap={20} size={1} />
             <Controls />
