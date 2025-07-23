@@ -1,47 +1,123 @@
-# Mapin — Visio-lite PoC
+# Mapin
 
-This repository contains a monorepo for the **Mapin** process-mapping proof-of-concept.
+> Visio-lite diagramming for the browser – **open-source, web-first, MIT-licensed**.
 
-* **Frontend:** React 18 + Vite + TypeScript (located in `apps/web`)
-* **Diagram engine:** React Flow Community + tldraw
-* **Styling:** Tailwind CSS + shadcn/ui (soon)
+![Mapin screenshot placeholder](./docs/screenshot.png)
 
-## Getting started
+Mapin lets you create process maps, flow-charts, and whiteboard sketches directly in the browser using drag-and-drop shapes and smart connectors. It’s built to be:
+
+* **Free & open source** – MIT license, no vendor lock-in.
+* **Web-first** – runs entirely client-side; deploy it to any static host.
+* **Extensible** – powered by React, Tailwind, and the excellent React Flow graph engine.
+
+---
+
+## ✨ Features (MVP)
+
+| Status | Feature |
+| ------ | ------- |
+| ✅ | Rectangle, diamond, ellipse & text shapes |
+| ✅ | Drag-drop, pan, zoom, snap-to-grid |
+| ✅ | Orthogonal connectors with auto-routing |
+| ✅ | Mini-map & canvas controls |
+| 🔜 | JSON save/load ↔ localStorage |
+| 🔜 | Export to PNG / SVG |
+| 🔜 | Multi-select, align & distribute |
+| 🚀 | Real-time collaboration (CRDT/WebSocket) |
+
+---
+
+## 🔧 Tech stack
+
+| Layer | Library |
+| ----- | ------- |
+| UI / Framework | React 18, TypeScript, Vite |
+| Diagram engine | `@xyflow/react` (React Flow v12) |
+| Canvas polish | Tailwind CSS 3.x |
+| State | Zustand 4 |
+| Build / tooling | pnpm workspaces, Vitest, ESLint, Prettier |
+| Hosting | Vercel Hobby (static build)
+
+---
+
+## 📂 Repository structure
+
+```
+.
+├─ apps/
+│  └─ web/           # React front-end (Vite)
+├─ libs/             # Shared TS utilities (future)
+├─ docs/             # Images / docs (optional)
+├─ pnpm-workspace.yaml
+└─ vercel.json       # Deployment config
+```
+
+---
+
+## 🚀 Quick start
 
 ```bash
-# Install dependencies (PNPM is recommended)
-pnpm install
+# 1. Clone
+$ git clone https://github.com/TechKuro/Mapin.git && cd Mapin
 
-# Start the web app in dev mode
-pnpm dev
+# 2. Install (needs Node ≥18 & pnpm ≥8)
+$ pnpm install
+
+# 3. Run dev server
+$ pnpm dev            # → http://localhost:5173
 ```
 
-The web application will be available at http://localhost:5173 by default.
+### Using GitHub Codespaces
 
-## Project layout
+1. Click the **Code ▾** button → **Codespaces** → **Create codespace**.
+2. Wait for the container to build; the dev server will auto-run.
 
-```text
-.
-├─ apps/web/         # React + Vite frontend
-├─ libs/             # Shared TypeScript libraries (planned)
-└─ pnpm-workspace.yaml
-```
+---
 
-## Deploying to Vercel (cloud-only workflow)
+## 📜 Scripts
 
-1. Sign in to [Vercel](https://vercel.com) with GitHub and click **Add New → Project**.
-2. Select the `TechKuro/Mapin` repository.
-3. When prompted for settings:
-   * **Framework Preset:** Vite
-   * **Root Directory:** `.` (repo root)
-   * **Build Command:** `npm run build --workspaces` *(default picked up)*
-   * **Output Directory:** `apps/web/dist`
-4. Click **Deploy** – the first build may take a minute. Subsequent pushes trigger preview URLs automatically.
+| Command | Description |
+| ------- | ----------- |
+| `pnpm dev` | Start Vite dev server |
+| `pnpm build` | Production build (outputs to `apps/web/dist`) |
+| `pnpm preview` | Preview the prod build locally |
+| `pnpm lint` | Run ESLint across workspace |
+| `pnpm test` | Unit tests via Vitest |
 
-Alternatively, if you keep the `vercel.json` committed (already provided), Vercel detects the settings above automatically, so you can just hit **Import** and deploy.
+---
 
-After deploy completes, the Production URL is live and each git commit will receive its own preview link (e.g. `https://mapin-git-feature-xyz-vercel.app`).
+## ☁️ Deployment (Vercel)
 
-## License
+The repo includes `vercel.json`; just **Import Project** in the Vercel dashboard. Builds are automatic on every push and each PR gets its own preview URL.
 
-MIT © 2025 Martin Graham 
+---
+
+## 🗺 Roadmap
+
+1. Finish save/load & export functionality.
+2. Keyboard shortcuts + multi-select tooling.
+3. Public share links (Supabase row storage).
+4. Real-time collaboration via WebSocket & Yjs.
+5. Mobile wrapper (Capacitor) for tablet editing.
+
+See [issues](https://github.com/TechKuro/Mapin/issues) for the up-to-date task list.
+
+---
+
+## 🤝 Contributing
+
+PRs and issues are welcome! Please follow the conventional-commit style (`feat: …`, `fix: …`) and run `pnpm lint && pnpm test` before opening a pull request.
+
+---
+
+## 📄 License
+
+MIT © 2025 Martin Graham
+
+---
+
+## 🙏 Acknowledgements
+
+* [React Flow](https://reactflow.dev) – diagram engine
+* [Tailwind CSS](https://tailwindcss.com) – utility-first styling
+* [xyflow](https://github.com/xyflow/xyflow) community – inspiration & support 

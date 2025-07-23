@@ -23,38 +23,25 @@ export const RectangleNode: React.FC<NodeProps> = ({ data, isConnectable }) => {
 };
 
 // Diamond/Decision Node
-export const DiamondNode: React.FC<NodeProps> = ({ data, isConnectable }) => {
-  return (
-    <div className="relative">
-      <Handle
-        type="target"
-        position={Position.Top}
-        isConnectable={isConnectable}
-        style={{ top: '-8px' }}
-      />
-      <div 
-        className="w-24 h-24 border-2 border-yellow-500 bg-white shadow-md flex items-center justify-center transform rotate-45"
-        style={{ clipPath: 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)' }}
-      >
-        <div className="transform -rotate-45 text-xs font-medium text-gray-900 text-center px-2">
-          {data?.label || 'Decision'}
-        </div>
-      </div>
-      <Handle
-        type="source"
-        position={Position.Bottom}
-        isConnectable={isConnectable}
-        style={{ bottom: '-8px' }}
-      />
-      <Handle
-        type="source"
-        position={Position.Right}
-        isConnectable={isConnectable}
-        style={{ right: '-8px' }}
-      />
+export const DiamondNode: React.FC<NodeProps> = ({ data, isConnectable }) => (
+  <div className="relative">
+    <Handle type="target" position={Position.Top} isConnectable={isConnectable} />
+
+    {/* Diamond body */}
+    <div
+      className="w-28 h-28 flex items-center justify-center bg-white border-2 border-yellow-500 shadow-md"
+      style={{ clipPath: 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)' }}
+    >
+      <span className="text-xs font-medium text-gray-900 text-center px-1">
+        {data?.label || 'Decision'}
+      </span>
     </div>
-  );
-};
+
+    {/* Handles */}
+    <Handle type="source" position={Position.Bottom} isConnectable={isConnectable} />
+    <Handle type="source" position={Position.Right} isConnectable={isConnectable} />
+  </div>
+);
 
 // Ellipse/Start-End Node
 export const EllipseNode: React.FC<NodeProps> = ({ data, isConnectable }) => {
