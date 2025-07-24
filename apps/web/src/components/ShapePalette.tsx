@@ -60,7 +60,7 @@ const ShapePalette: React.FC<ShapePaletteProps> = ({ onShapeSelect }) => {
               onDragStart={(event) => onDragStart(event, shape.id)}
               onClick={() => onShapeSelect(shape.id)}
             >
-              <div className="flex-shrink-0 w-8 h-8 flex items-center justify-center bg-gray-100 rounded text-lg">
+              <div className="flex-shrink-0 w-8 h-8 flex items-center justify-center bg-gray-100 rounded text-lg border border-gray-300">
                 {shape.icon}
               </div>
               <div className="ml-3 flex-1">
