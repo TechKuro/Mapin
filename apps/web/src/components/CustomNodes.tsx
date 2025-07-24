@@ -29,7 +29,7 @@ export const DiamondNode: React.FC<NodeProps> = ({ data, isConnectable }) => (
 
     {/* Diamond body */}
     <div
-      className="w-28 h-28 flex items-center justify-center bg-white border-2 border-yellow-600 shadow-md"
+      className="w-28 h-28 flex items-center justify-center bg-white ring-2 ring-yellow-600 shadow-md"
       style={{ clipPath: 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)' }}
     >
       <span className="text-xs font-medium text-gray-900 text-center px-1">
