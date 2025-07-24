@@ -15,7 +15,6 @@
   },
   "devDependencies": {
     "turbo": "^1.10.13",
-    "husky": "^8.0.3",
     "lint-staged": "^13.2.3",
     "eslint": "^8.45.0",
     "@typescript-eslint/parser": "^6.1.0",
@@ -23,6 +22,9 @@
     "eslint-plugin-prettier": "^5.0.0",
     "eslint-config-prettier": "^9.0.0",
     "prettier": "^3.0.0"
+  },
+  "dependencies": {
+    "husky": "^8.0.3"
   },
   "lint-staged": {
     "*.{ts,tsx,js,jsx}": [
