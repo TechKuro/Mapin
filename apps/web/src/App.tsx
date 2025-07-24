@@ -188,7 +188,9 @@ const FlowCanvas = () => {
             onDrop={onDrop}
             onDragOver={onDragOver}
             nodeTypes={nodeTypes}
-            fitView
+            panOnScroll
+            zoomOnScroll
+            panOnDrag
             snapToGrid
             snapGrid={[20, 20]}
             connectionLineType="step"
