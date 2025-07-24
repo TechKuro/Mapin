@@ -32,14 +32,13 @@ export const DiamondNode: React.FC<NodeProps> = ({ data, isConnectable }) => (
       isConnectable={isConnectable}
     />
 
-    {/* Diamond body */}
-    <div
-      className="w-28 h-28 flex items-center justify-center bg-white border-2 border-yellow-600 shadow-md"
-      style={{ clipPath: 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)' }}
-    >
-      <span className="text-xs font-medium text-gray-900 text-center px-1">
-        {data?.label || 'Decision'}
-      </span>
+    {/* Diamond body via a rotated square so border renders */}
+    <div className="w-28 h-28 flex items-center justify-center">
+      <div className="w-full h-full bg-white border-2 border-yellow-600 shadow-md transform rotate-45 flex items-center justify-center">
+        <span className="text-xs font-medium text-gray-900 text-center px-1 transform -rotate-45">
+          {data?.label || 'Decision'}
+        </span>
+      </div>
     </div>
 
     {/* Handles */}
