@@ -61,6 +61,81 @@ const FlowCanvas = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const { screenToFlowPosition } = useReactFlow();
+  const reactFlowInstance = useReactFlow();
+
+  // --- Undo / Redo --------------------------------------------------
+  const undoStack = React.useRef<{ nodes: Node[]; edges: Edge[] }[]>([]);
+  const redoStack = React.useRef<{ nodes: Node[]; edges: Edge[] }[]>([]);
+
+  // push current state to undo stack whenever nodes or edges change
+  React.useEffect(() => {
+    undoStack.current.push({ nodes, edges });
+    // clear redo stack on new action
+    redoStack.current = [];
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [nodes, edges]);
+
+  const undo = () => {
+    if (undoStack.current.length > 1) {
+      const current = undoStack.current.pop();
+      if (current) redoStack.current.push(current);
+      const prev = undoStack.current[undoStack.current.length - 1];
+      setNodes(prev.nodes);
+      setEdges(prev.edges);
+    }
+  };
+
+  const redo = () => {
+    if (redoStack.current.length) {
+      const next = redoStack.current.pop();
+      if (next) {
+        undoStack.current.push({ nodes: next.nodes, edges: next.edges });
+        setNodes(next.nodes);
+        setEdges(next.edges);
+      }
+    }
+  };
+
+  // --- Keyboard shortcuts -----------------------------------------
+  React.useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && event.key === 'z') {
+        event.preventDefault();
+        if (event.shiftKey) {
+          redo();
+        } else {
+          undo();
+        }
+      }
+
+      if ((event.key === 'Delete' || event.key === 'Backspace') && !event.repeat) {
+        const currentNodes = reactFlowInstance.getNodes();
+        const currentEdges = reactFlowInstance.getEdges();
+        const remainingNodes = currentNodes.filter((n: Node) => !n.selected);
+        const remainingEdges = currentEdges.filter((e: Edge) => !e.selected);
+        if (remainingNodes.length !== currentNodes.length || remainingEdges.length !== currentEdges.length) {
+          setNodes(remainingNodes);
+          setEdges(remainingEdges);
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [reactFlowInstance, setNodes, setEdges]);
+
+  // --- Inline editing ----------------------------------------------
+  const handleNodeDoubleClick = useCallback(
+    (_: React.MouseEvent, node: Node) => {
+      const newLabel = prompt('Edit label', node.data?.label || '')?.trim();
+      if (newLabel && newLabel.length > 0) {
+        setNodes((nds: Node[]) =>
+          nds.map((n) => (n.id === node.id ? { ...n, data: { ...n.data, label: newLabel } } : n))
+        );
+      }
+    },
+    [setNodes]
+  );
 
   const onConnect = useCallback(
     (params: Connection) => setEdges((eds: Edge[]) => addEdge(params, eds)),
@@ -195,6 +270,7 @@ const FlowCanvas = () => {
             snapGrid={[20, 20]}
             connectionLineType="step"
             defaultEdgeOptions={{ type: 'step' }}
+            onNodeDoubleClick={handleNodeDoubleClick}
           >
             <Background variant="dots" gap={20} size={1} />
             <Controls />
