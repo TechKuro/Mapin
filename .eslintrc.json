@@ -26,5 +26,8 @@
       "version": "detect"
     }
   },
+  "rules": {
+    "prettier/prettier": "warn"
+  },
   "ignorePatterns": ["dist", "build"]
 } 
