@@ -40,7 +40,7 @@ export const DiamondNode: React.FC<NodeProps> = ({ data, isConnectable }) => (
       >
         <span
           className="text-sm font-semibold text-gray-900 text-center px-1"
-          style={{ transform: 'rotate(-45deg)' }}
+          style={{ transform: 'rotate(-45deg) scale(1.4142)' }}
         >
           {data?.label || 'Decision'}
         </span>
