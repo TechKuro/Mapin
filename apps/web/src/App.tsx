@@ -130,11 +130,13 @@ const FlowCanvas = () => {
       const newLabel = prompt('Edit label', node.data?.label || '')?.trim();
       if (newLabel && newLabel.length > 0) {
         setNodes((nds: Node[]) =>
-          nds.map((n) => (n.id === node.id ? { ...n, data: { ...n.data, label: newLabel } } : n))
+          nds.map((n) =>
+            n.id === node.id ? { ...n, data: { ...n.data, label: newLabel } } : n
+          )
         );
       }
     },
-    [setNodes]
+    [setNodes],
   );
 
   const onConnect = useCallback(
@@ -147,7 +149,7 @@ const FlowCanvas = () => {
       }
       setEdges((eds: Edge[]) => addEdge(params, eds));
     },
-    [setEdges]
+    [setEdges],
   );
 
   const onDragOver = useCallback((event: React.DragEvent) => {
@@ -174,23 +176,30 @@ const FlowCanvas = () => {
         id: getId(),
         type: shapeType,
         position,
-        data: { label: `${shapeType.charAt(0).toUpperCase() + shapeType.slice(1)} ${id}` },
+        data: {
+          label: `${shapeType.charAt(0).toUpperCase() + shapeType.slice(1)} ${id}`,
+        },
       };
 
       setNodes((nds: Node[]) => nds.concat(newNode));
     },
-    [screenToFlowPosition, setNodes]
+    [screenToFlowPosition, setNodes],
   );
 
-  const onShapeSelect = useCallback((shapeType: ShapeType) => {
-    const newNode = {
-      id: getId(),
-      type: shapeType,
-      position: { x: Math.random() * 400 + 200, y: Math.random() * 400 + 200 },
-      data: { label: `${shapeType.charAt(0).toUpperCase() + shapeType.slice(1)} ${id}` },
-    };
-    setNodes((nds: Node[]) => nds.concat(newNode));
-  }, [setNodes]);
+  const onShapeSelect = useCallback(
+    (shapeType: ShapeType) => {
+      const newNode = {
+        id: getId(),
+        type: shapeType,
+        position: { x: Math.random() * 400 + 200, y: Math.random() * 400 + 200 },
+        data: {
+          label: `${shapeType.charAt(0).toUpperCase() + shapeType.slice(1)} ${id}`,
+        },
+      };
+      setNodes((nds: Node[]) => nds.concat(newNode));
+    },
+    [setNodes],
+  );
 
   const handleSave = useCallback(() => {
     const flowData = {
@@ -243,13 +252,22 @@ const FlowCanvas = () => {
       <div className="bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
         <h1 className="text-xl font-semibold text-gray-900">Mapin - Process Mapper</h1>
         <div className="flex gap-2">
-          <button onClick={handleSave} className="px-3 py-1.5 text-sm bg-blue-600 text-white rounded hover:bg-blue-700">
+          <button
+            onClick={handleSave}
+            className="px-3 py-1.5 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
+          >
             Save
           </button>
-          <button onClick={handleLoad} className="px-3 py-1.5 text-sm bg-gray-600 text-white rounded hover:bg-gray-700">
+          <button
+            onClick={handleLoad}
+            className="px-3 py-1.5 text-sm bg-gray-600 text-white rounded hover:bg-gray-700"
+          >
             Load
           </button>
-          <button onClick={handleReset} className="px-3 py-1.5 text-sm bg-red-600 text-white rounded hover:bg-red-700">
+          <button
+            onClick={handleReset}
+            className="px-3 py-1.5 text-sm bg-red-600 text-white rounded hover:bg-red-700"
+          >
             Reset
           </button>
         </div>
@@ -259,7 +277,7 @@ const FlowCanvas = () => {
       <div className="flex-1 flex">
         {/* Shape Palette */}
         <ShapePalette onShapeSelect={onShapeSelect} />
-        
+
         {/* Canvas Area */}
         <div className="flex-1">
           <ReactFlow
@@ -282,7 +300,7 @@ const FlowCanvas = () => {
           >
             <Background variant="dots" gap={20} size={1} />
             <Controls />
-            <MiniMap 
+            <MiniMap
               nodeStrokeColor="#374151"
               nodeColor="#f3f4f6"
               nodeBorderRadius={2}
@@ -303,4 +321,4 @@ function App() {
   );
 }
 
-export default App; 
+export default App;

@@ -50,7 +50,7 @@ const ShapePalette: React.FC<ShapePaletteProps> = ({ onShapeSelect }) => {
     <div className="w-64 bg-white border-r border-gray-200 h-full overflow-y-auto">
       <div className="p-4">
         <h2 className="text-lg font-semibold text-gray-900 mb-4">Shapes</h2>
-        
+
         <div className="space-y-2">
           {shapes.map((shape) => (
             <div
@@ -64,12 +64,8 @@ const ShapePalette: React.FC<ShapePaletteProps> = ({ onShapeSelect }) => {
                 {shape.icon}
               </div>
               <div className="ml-3 flex-1">
-                <div className="text-sm font-medium text-gray-900">
-                  {shape.label}
-                </div>
-                <div className="text-xs text-gray-500">
-                  {shape.description}
-                </div>
+                <div className="text-sm font-medium text-gray-900">{shape.label}</div>
+                <div className="text-xs text-gray-500">{shape.description}</div>
               </div>
             </div>
           ))}
@@ -89,4 +85,4 @@ const ShapePalette: React.FC<ShapePaletteProps> = ({ onShapeSelect }) => {
   );
 };
 
-export default ShapePalette; 
+export default ShapePalette;
