@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 import { Handle, Position, type NodeProps } from '@xyflow/react';
 
 // Rectangle/Process Node
@@ -79,11 +79,127 @@ export const EllipseNode: React.FC<NodeProps> = ({ data, isConnectable }) => {
   );
 };
 
-// Text/Annotation Node
-export const TextNode: React.FC<NodeProps> = ({ data }) => {
+// Text/Annotation Node with resize capability
+export const TextNode: React.FC<NodeProps> = ({ data, isConnectable, id }) => {
+  const [size, setSize] = useState({ 
+    width: data?.width || 200, 
+    height: data?.height || 60 
+  });
+  const [isResizing, setIsResizing] = useState(false);
+  const [resizeHandle, setResizeHandle] = useState<string | null>(null);
+
+  // Update size when data changes
+  React.useEffect(() => {
+    setSize({ 
+      width: data?.width || 200, 
+      height: data?.height || 60 
+    });
+  }, [data?.width, data?.height]);
+
+  const handleMouseDown = useCallback((e: React.MouseEvent, handle: string) => {
+    e.stopPropagation();
+    setIsResizing(true);
+    setResizeHandle(handle);
+  }, []);
+
+  const handleMouseMove = useCallback(
+    (e: MouseEvent) => {
+      if (!isResizing || !resizeHandle) return;
+
+      const deltaX = e.movementX;
+      const deltaY = e.movementY;
+
+      setSize((prevSize) => {
+        let newWidth = prevSize.width;
+        let newHeight = prevSize.height;
+
+        switch (resizeHandle) {
+          case 'se': // Southeast (bottom-right)
+            newWidth = Math.max(100, prevSize.width + deltaX);
+            newHeight = Math.max(40, prevSize.height + deltaY);
+            break;
+          case 'sw': // Southwest (bottom-left)
+            newWidth = Math.max(100, prevSize.width - deltaX);
+            newHeight = Math.max(40, prevSize.height + deltaY);
+            break;
+          case 'ne': // Northeast (top-right)
+            newWidth = Math.max(100, prevSize.width + deltaX);
+            newHeight = Math.max(40, prevSize.height - deltaY);
+            break;
+          case 'nw': // Northwest (top-left)
+            newWidth = Math.max(100, prevSize.width - deltaX);
+            newHeight = Math.max(40, prevSize.height - deltaY);
+            break;
+        }
+
+        return { width: newWidth, height: newHeight };
+      });
+    },
+    [isResizing, resizeHandle]
+  );
+
+  const handleMouseUp = useCallback(() => {
+    setIsResizing(false);
+    setResizeHandle(null);
+    
+    // Update the node data with the new size
+    if (data?.onSizeChange) {
+      data.onSizeChange(id, size);
+    }
+  }, [id, size, data]);
+
+  React.useEffect(() => {
+    if (isResizing) {
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+      return () => {
+        document.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('mouseup', handleMouseUp);
+      };
+    }
+  }, [isResizing, handleMouseMove, handleMouseUp]);
+
   return (
-    <div className="px-3 py-2 bg-yellow-50 border border-gray-400 rounded text-sm text-gray-800 shadow-sm max-w-[200px]">
-      {data?.label || 'Text annotation'}
+    <div className="relative group">
+      {/* Main text container */}
+      <div
+        className="px-3 py-2 bg-yellow-50 border border-gray-400 rounded text-sm text-gray-800 shadow-sm resize-none overflow-hidden"
+        style={{
+          width: size.width,
+          height: size.height,
+          minWidth: 100,
+          minHeight: 40,
+        }}
+      >
+        <div className="w-full h-full flex items-center justify-center">
+          {data?.label || 'Text annotation'}
+        </div>
+      </div>
+
+      {/* Resize handles - only show on hover */}
+      <div className="absolute inset-0 pointer-events-none group-hover:pointer-events-auto">
+        {/* Corner resize handles */}
+        <div
+          className="absolute w-3 h-3 bg-blue-500 border border-white rounded-sm cursor-se-resize opacity-0 group-hover:opacity-100 transition-opacity"
+          style={{ bottom: -6, right: -6 }}
+          onMouseDown={(e) => handleMouseDown(e, 'se')}
+        />
+        <div
+          className="absolute w-3 h-3 bg-blue-500 border border-white rounded-sm cursor-sw-resize opacity-0 group-hover:opacity-100 transition-opacity"
+          style={{ bottom: -6, left: -6 }}
+          onMouseDown={(e) => handleMouseDown(e, 'sw')}
+        />
+        <div
+          className="absolute w-3 h-3 bg-blue-500 border border-white rounded-sm cursor-ne-resize opacity-0 group-hover:opacity-100 transition-opacity"
+          style={{ top: -6, right: -6 }}
+          onMouseDown={(e) => handleMouseDown(e, 'ne')}
+        />
+        <div
+          className="absolute w-3 h-3 bg-blue-500 border border-white rounded-sm cursor-nw-resize opacity-0 group-hover:opacity-100 transition-opacity"
+          style={{ top: -6, left: -6 }}
+          onMouseDown={(e) => handleMouseDown(e, 'nw')}
+        />
+      </div>
     </div>
   );
 };

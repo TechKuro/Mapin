@@ -63,6 +63,17 @@ const FlowCanvas = () => {
   const { screenToFlowPosition } = useReactFlow();
   const reactFlowInstance = useReactFlow();
 
+  // Handle text node size changes
+  const handleTextNodeSizeChange = useCallback((nodeId: string, newSize: { width: number; height: number }) => {
+    setNodes((nds: Node[]) =>
+      nds.map((n) =>
+        n.id === nodeId
+          ? { ...n, data: { ...n.data, width: newSize.width, height: newSize.height } }
+          : n
+      )
+    );
+  }, [setNodes]);
+
   // --- Undo / Redo --------------------------------------------------
   const undoStack = React.useRef<{ nodes: Node[]; edges: Edge[] }[]>([]);
   const redoStack = React.useRef<{ nodes: Node[]; edges: Edge[] }[]>([]);
@@ -281,7 +292,11 @@ const FlowCanvas = () => {
         {/* Canvas Area */}
         <div className="flex-1">
           <ReactFlow
-            nodes={nodes}
+            nodes={nodes.map((node) => 
+              node.type === 'text' 
+                ? { ...node, data: { ...node.data, onSizeChange: handleTextNodeSizeChange } }
+                : node
+            )}
             edges={edges}
             onNodesChange={onNodesChange}
             onEdgesChange={onEdgesChange}
