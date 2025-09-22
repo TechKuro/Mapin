@@ -99,6 +99,7 @@ export const TextNode: React.FC<NodeProps> = ({ data, isConnectable, id }) => {
   const handleMouseDown = useCallback((e: React.MouseEvent, handle: string) => {
     e.stopPropagation();
     e.preventDefault();
+    e.nativeEvent.stopImmediatePropagation();
     setIsResizing(true);
     setResizeHandle(handle);
   }, []);
@@ -161,7 +162,14 @@ export const TextNode: React.FC<NodeProps> = ({ data, isConnectable, id }) => {
   }, [isResizing, handleMouseMove, handleMouseUp]);
 
   return (
-    <div className="relative group">
+    <div 
+      className="relative group"
+      style={{ 
+        pointerEvents: isResizing ? 'none' : 'auto',
+        userSelect: isResizing ? 'none' : 'auto'
+      }}
+      data-resizing={isResizing}
+    >
       {/* Main text container */}
       <div
         className="px-3 py-2 bg-yellow-50 border border-gray-400 rounded text-sm text-gray-800 shadow-sm resize-none overflow-hidden"
@@ -178,42 +186,66 @@ export const TextNode: React.FC<NodeProps> = ({ data, isConnectable, id }) => {
       </div>
 
       {/* Resize handles - only show on hover */}
-      <div className="absolute inset-0 pointer-events-none group-hover:pointer-events-auto">
+      <div className="absolute inset-0 pointer-events-none group-hover:pointer-events-auto" style={{ pointerEvents: 'auto' }}>
         {/* Corner resize handles */}
         <div
-          className="absolute w-4 h-4 bg-black border-2 border-white rounded-full cursor-se-resize opacity-0 group-hover:opacity-100 transition-opacity z-10"
-          style={{ bottom: -8, right: -8 }}
+          className="absolute w-2.5 h-2.5 bg-black border border-white rounded-full cursor-se-resize opacity-0 group-hover:opacity-100 transition-opacity z-20"
+          style={{ bottom: -5, right: -5 }}
           onMouseDown={(e: React.MouseEvent) => {
             e.stopPropagation();
             e.preventDefault();
+            e.nativeEvent.stopImmediatePropagation();
             handleMouseDown(e, 'se');
           }}
+          onMouseUp={(e: React.MouseEvent) => {
+            e.stopPropagation();
+            e.preventDefault();
+            e.nativeEvent.stopImmediatePropagation();
+          }}
         />
         <div
-          className="absolute w-4 h-4 bg-black border-2 border-white rounded-full cursor-sw-resize opacity-0 group-hover:opacity-100 transition-opacity z-10"
-          style={{ bottom: -8, left: -8 }}
+          className="absolute w-2.5 h-2.5 bg-black border border-white rounded-full cursor-sw-resize opacity-0 group-hover:opacity-100 transition-opacity z-20"
+          style={{ bottom: -5, left: -5 }}
           onMouseDown={(e: React.MouseEvent) => {
             e.stopPropagation();
             e.preventDefault();
+            e.nativeEvent.stopImmediatePropagation();
             handleMouseDown(e, 'sw');
           }}
-        />
-        <div
-          className="absolute w-4 h-4 bg-black border-2 border-white rounded-full cursor-ne-resize opacity-0 group-hover:opacity-100 transition-opacity z-10"
-          style={{ top: -8, right: -8 }}
-          onMouseDown={(e: React.MouseEvent) => {
+          onMouseUp={(e: React.MouseEvent) => {
             e.stopPropagation();
             e.preventDefault();
-            handleMouseDown(e, 'ne');
+            e.nativeEvent.stopImmediatePropagation();
           }}
         />
         <div
-          className="absolute w-4 h-4 bg-black border-2 border-white rounded-full cursor-nw-resize opacity-0 group-hover:opacity-100 transition-opacity z-10"
-          style={{ top: -8, left: -8 }}
+          className="absolute w-2.5 h-2.5 bg-black border border-white rounded-full cursor-ne-resize opacity-0 group-hover:opacity-100 transition-opacity z-20"
+          style={{ top: -5, right: -5 }}
           onMouseDown={(e: React.MouseEvent) => {
             e.stopPropagation();
             e.preventDefault();
+            e.nativeEvent.stopImmediatePropagation();
+            handleMouseDown(e, 'ne');
+          }}
+          onMouseUp={(e: React.MouseEvent) => {
+            e.stopPropagation();
+            e.preventDefault();
+            e.nativeEvent.stopImmediatePropagation();
+          }}
+        />
+        <div
+          className="absolute w-2.5 h-2.5 bg-black border border-white rounded-full cursor-nw-resize opacity-0 group-hover:opacity-100 transition-opacity z-20"
+          style={{ top: -5, left: -5 }}
+          onMouseDown={(e: React.MouseEvent) => {
+            e.stopPropagation();
+            e.preventDefault();
+            e.nativeEvent.stopImmediatePropagation();
             handleMouseDown(e, 'nw');
+          }}
+          onMouseUp={(e: React.MouseEvent) => {
+            e.stopPropagation();
+            e.preventDefault();
+            e.nativeEvent.stopImmediatePropagation();
           }}
         />
       </div>
