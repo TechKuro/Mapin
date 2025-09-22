@@ -17,8 +17,6 @@ export const RectangleNode: React.FC<NodeProps> = ({ data, isConnectable }) => {
 // Diamond/Decision Node
 export const DiamondNode: React.FC<NodeProps> = ({ data, isConnectable }) => (
   <div className="relative">
-    <Handle type="target" position={Position.Top} id="top" isConnectable={isConnectable} />
-
     {/* Diamond body via a rotated square so border renders */}
     <div className="w-28 h-28 flex items-center justify-center overflow-visible">
       <div
@@ -34,10 +32,35 @@ export const DiamondNode: React.FC<NodeProps> = ({ data, isConnectable }) => (
       </div>
     </div>
 
-    {/* Handles */}
-    <Handle type="source" position={Position.Right} id="right" isConnectable={isConnectable} />
-    <Handle type="source" position={Position.Bottom} id="bottom" isConnectable={isConnectable} />
-    <Handle type="source" position={Position.Left} id="left" isConnectable={isConnectable} />
+    {/* Handles - positioned after the diamond body to ensure proper z-index */}
+    <Handle 
+      type="target" 
+      position={Position.Top} 
+      id="top" 
+      isConnectable={isConnectable}
+      style={{ zIndex: 10 }}
+    />
+    <Handle 
+      type="source" 
+      position={Position.Right} 
+      id="right" 
+      isConnectable={isConnectable}
+      style={{ zIndex: 10 }}
+    />
+    <Handle 
+      type="source" 
+      position={Position.Bottom} 
+      id="bottom" 
+      isConnectable={isConnectable}
+      style={{ zIndex: 10 }}
+    />
+    <Handle 
+      type="source" 
+      position={Position.Left} 
+      id="left" 
+      isConnectable={isConnectable}
+      style={{ zIndex: 10 }}
+    />
   </div>
 );
 
