@@ -109,7 +109,7 @@ export const TextNode: React.FC<NodeProps> = ({ data, isConnectable, id }) => {
       const deltaX = e.movementX;
       const deltaY = e.movementY;
 
-      setSize((prevSize) => {
+      setSize((prevSize: { width: number; height: number }) => {
         let newWidth = prevSize.width;
         let newHeight = prevSize.height;
 
@@ -182,22 +182,22 @@ export const TextNode: React.FC<NodeProps> = ({ data, isConnectable, id }) => {
         <div
           className="absolute w-3 h-3 bg-blue-500 border border-white rounded-sm cursor-se-resize opacity-0 group-hover:opacity-100 transition-opacity"
           style={{ bottom: -6, right: -6 }}
-          onMouseDown={(e) => handleMouseDown(e, 'se')}
+          onMouseDown={(e: React.MouseEvent) => handleMouseDown(e, 'se')}
         />
         <div
           className="absolute w-3 h-3 bg-blue-500 border border-white rounded-sm cursor-sw-resize opacity-0 group-hover:opacity-100 transition-opacity"
           style={{ bottom: -6, left: -6 }}
-          onMouseDown={(e) => handleMouseDown(e, 'sw')}
+          onMouseDown={(e: React.MouseEvent) => handleMouseDown(e, 'sw')}
         />
         <div
           className="absolute w-3 h-3 bg-blue-500 border border-white rounded-sm cursor-ne-resize opacity-0 group-hover:opacity-100 transition-opacity"
           style={{ top: -6, right: -6 }}
-          onMouseDown={(e) => handleMouseDown(e, 'ne')}
+          onMouseDown={(e: React.MouseEvent) => handleMouseDown(e, 'ne')}
         />
         <div
           className="absolute w-3 h-3 bg-blue-500 border border-white rounded-sm cursor-nw-resize opacity-0 group-hover:opacity-100 transition-opacity"
           style={{ top: -6, left: -6 }}
-          onMouseDown={(e) => handleMouseDown(e, 'nw')}
+          onMouseDown={(e: React.MouseEvent) => handleMouseDown(e, 'nw')}
         />
       </div>
     </div>

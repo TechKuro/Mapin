@@ -292,7 +292,7 @@ const FlowCanvas = () => {
         {/* Canvas Area */}
         <div className="flex-1">
           <ReactFlow
-            nodes={nodes.map((node) => 
+            nodes={nodes.map((node: Node) => 
               node.type === 'text' 
                 ? { ...node, data: { ...node.data, onSizeChange: handleTextNodeSizeChange } }
                 : node
