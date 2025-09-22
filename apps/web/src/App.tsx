@@ -44,13 +44,13 @@ const initialEdges = [
     id: 'e1-2',
     source: '1',
     target: '2',
-    type: 'step',
+    type: 'smoothstep',
   },
   {
     id: 'e2-3',
     source: '2',
     target: '3',
-    type: 'step',
+    type: 'smoothstep',
   },
 ];
 
@@ -138,7 +138,15 @@ const FlowCanvas = () => {
   );
 
   const onConnect = useCallback(
-    (params: Connection) => setEdges((eds: Edge[]) => addEdge(params, eds)),
+    (params: Connection) => {
+      console.log('Connection attempt:', params);
+      // Validate connection - prevent self-connections
+      if (params.source === params.target) {
+        console.log('Prevented self-connection');
+        return;
+      }
+      setEdges((eds: Edge[]) => addEdge(params, eds));
+    },
     [setEdges]
   );
 
@@ -268,8 +276,8 @@ const FlowCanvas = () => {
             panOnDrag
             snapToGrid
             snapGrid={[20, 20]}
-            connectionLineType="step"
-            defaultEdgeOptions={{ type: 'step' }}
+            connectionLineType="smoothstep"
+            defaultEdgeOptions={{ type: 'smoothstep' }}
             onNodeDoubleClick={handleNodeDoubleClick}
           >
             <Background variant="dots" gap={20} size={1} />

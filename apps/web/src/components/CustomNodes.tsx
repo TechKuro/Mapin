@@ -8,6 +8,7 @@ export const RectangleNode: React.FC<NodeProps> = ({ data, isConnectable }) => {
       <Handle
         type="target"
         position={Position.Top}
+        id="top"
         isConnectable={isConnectable}
       />
       <div className="text-sm font-medium text-gray-900 text-center">
@@ -16,6 +17,7 @@ export const RectangleNode: React.FC<NodeProps> = ({ data, isConnectable }) => {
       <Handle
         type="source"
         position={Position.Bottom}
+        id="bottom"
         isConnectable={isConnectable}
       />
     </div>
@@ -76,6 +78,7 @@ export const EllipseNode: React.FC<NodeProps> = ({ data, isConnectable }) => {
       <Handle
         type="target"
         position={Position.Top}
+        id="top"
         isConnectable={isConnectable}
       />
       <div className="w-28 h-16 border-2 border-green-500 bg-white rounded-full shadow-md flex items-center justify-center">
@@ -86,6 +89,7 @@ export const EllipseNode: React.FC<NodeProps> = ({ data, isConnectable }) => {
       <Handle
         type="source"
         position={Position.Bottom}
+        id="bottom"
         isConnectable={isConnectable}
       />
     </div>
@@ -93,7 +97,7 @@ export const EllipseNode: React.FC<NodeProps> = ({ data, isConnectable }) => {
 };
 
 // Text/Annotation Node
-export const TextNode: React.FC<NodeProps> = ({ data }) => {
+export const TextNode: React.FC<NodeProps> = ({ data, isConnectable }) => {
   return (
     <div className="px-3 py-2 bg-yellow-50 border border-gray-400 rounded text-sm text-gray-800 shadow-sm max-w-[200px]">
       {data?.label || 'Text annotation'}
