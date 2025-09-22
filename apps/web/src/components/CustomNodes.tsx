@@ -98,6 +98,7 @@ export const TextNode: React.FC<NodeProps> = ({ data, isConnectable, id }) => {
 
   const handleMouseDown = useCallback((e: React.MouseEvent, handle: string) => {
     e.stopPropagation();
+    e.preventDefault();
     setIsResizing(true);
     setResizeHandle(handle);
   }, []);
@@ -180,24 +181,40 @@ export const TextNode: React.FC<NodeProps> = ({ data, isConnectable, id }) => {
       <div className="absolute inset-0 pointer-events-none group-hover:pointer-events-auto">
         {/* Corner resize handles */}
         <div
-          className="absolute w-3 h-3 bg-blue-500 border border-white rounded-sm cursor-se-resize opacity-0 group-hover:opacity-100 transition-opacity"
-          style={{ bottom: -6, right: -6 }}
-          onMouseDown={(e: React.MouseEvent) => handleMouseDown(e, 'se')}
+          className="absolute w-4 h-4 bg-black border-2 border-white rounded-full cursor-se-resize opacity-0 group-hover:opacity-100 transition-opacity z-10"
+          style={{ bottom: -8, right: -8 }}
+          onMouseDown={(e: React.MouseEvent) => {
+            e.stopPropagation();
+            e.preventDefault();
+            handleMouseDown(e, 'se');
+          }}
         />
         <div
-          className="absolute w-3 h-3 bg-blue-500 border border-white rounded-sm cursor-sw-resize opacity-0 group-hover:opacity-100 transition-opacity"
-          style={{ bottom: -6, left: -6 }}
-          onMouseDown={(e: React.MouseEvent) => handleMouseDown(e, 'sw')}
+          className="absolute w-4 h-4 bg-black border-2 border-white rounded-full cursor-sw-resize opacity-0 group-hover:opacity-100 transition-opacity z-10"
+          style={{ bottom: -8, left: -8 }}
+          onMouseDown={(e: React.MouseEvent) => {
+            e.stopPropagation();
+            e.preventDefault();
+            handleMouseDown(e, 'sw');
+          }}
         />
         <div
-          className="absolute w-3 h-3 bg-blue-500 border border-white rounded-sm cursor-ne-resize opacity-0 group-hover:opacity-100 transition-opacity"
-          style={{ top: -6, right: -6 }}
-          onMouseDown={(e: React.MouseEvent) => handleMouseDown(e, 'ne')}
+          className="absolute w-4 h-4 bg-black border-2 border-white rounded-full cursor-ne-resize opacity-0 group-hover:opacity-100 transition-opacity z-10"
+          style={{ top: -8, right: -8 }}
+          onMouseDown={(e: React.MouseEvent) => {
+            e.stopPropagation();
+            e.preventDefault();
+            handleMouseDown(e, 'ne');
+          }}
         />
         <div
-          className="absolute w-3 h-3 bg-blue-500 border border-white rounded-sm cursor-nw-resize opacity-0 group-hover:opacity-100 transition-opacity"
-          style={{ top: -6, left: -6 }}
-          onMouseDown={(e: React.MouseEvent) => handleMouseDown(e, 'nw')}
+          className="absolute w-4 h-4 bg-black border-2 border-white rounded-full cursor-nw-resize opacity-0 group-hover:opacity-100 transition-opacity z-10"
+          style={{ top: -8, left: -8 }}
+          onMouseDown={(e: React.MouseEvent) => {
+            e.stopPropagation();
+            e.preventDefault();
+            handleMouseDown(e, 'nw');
+          }}
         />
       </div>
     </div>
