@@ -23,7 +23,7 @@ function Login() {
       return;
     }
     setSession(data.session);
-    navigate('/');
+    navigate('/app');
   };
 
   const signUp = async (e?: React.FormEvent) => {
@@ -55,8 +55,45 @@ function Login() {
     }
     // If email confirmation is enabled, user needs to confirm via email.
     if (data.session) setSession(data.session);
-    navigate('/');
+    navigate('/app');
   };
+
+  // Handle OAuth/code exchange or confirm-email redirects
+  React.useEffect(() => {
+    const url = new URL(window.location.href);
+    const code = url.searchParams.get('code');
+    const token_hash = url.searchParams.get('token_hash');
+    const type = url.searchParams.get('type');
+
+    (async () => {
+      try {
+        if (code) {
+          const { data, error } = await supabase.auth.exchangeCodeForSession(url.toString());
+          if (error) return;
+          if (data.session) {
+            setSession(data.session);
+            navigate('/app');
+          }
+          return;
+        }
+
+        if (token_hash && type) {
+          // Handle email confirmations, password recovery, etc.
+          const { data, error } = await supabase.auth.verifyOtp({
+            token_hash,
+            type: type as any,
+          });
+          if (error) return;
+          if (data.session) {
+            setSession(data.session);
+            navigate('/app');
+          }
+        }
+      } catch (_) {
+        // swallow
+      }
+    })();
+  }, [navigate, setSession]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
