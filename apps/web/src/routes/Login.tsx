@@ -40,7 +40,14 @@ function Login() {
       setError('Password must be at least 6 characters.');
       return;
     }
-    const { data, error } = await supabase.auth.signUp({ email, password });
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        // ensure confirm-link returns to the current deployment (works for previews too)
+        emailRedirectTo: window.location.origin,
+      },
+    });
     setLoading(false);
     if (error) {
       setError(error.message);
