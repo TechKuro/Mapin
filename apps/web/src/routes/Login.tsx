@@ -26,10 +26,20 @@ function Login() {
     navigate('/');
   };
 
-  const signUp = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const signUp = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
     setLoading(true);
     setError(null);
+    if (!email || !password) {
+      setLoading(false);
+      setError('Please enter an email and password.');
+      return;
+    }
+    if (password.length < 6) {
+      setLoading(false);
+      setError('Password must be at least 6 characters.');
+      return;
+    }
     const { data, error } = await supabase.auth.signUp({ email, password });
     setLoading(false);
     if (error) {
@@ -81,15 +91,16 @@ function Login() {
 
         <div className="text-center text-xs text-gray-500 mt-3">or</div>
 
-        <form className="mt-3" onSubmit={signUp}>
+        <div className="mt-3">
           <button
-            type="submit"
+            type="button"
+            onClick={() => signUp()}
             disabled={loading}
             className="w-full bg-gray-800 text-white rounded px-3 py-2 text-sm hover:bg-gray-900 disabled:opacity-60"
           >
             {loading ? 'Creating account…' : 'Create an account'}
           </button>
-        </form>
+        </div>
       </div>
     </div>
   );
