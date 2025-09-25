@@ -17,6 +17,7 @@ import '@xyflow/react/dist/style.css';
 import ShapePalette, { type ShapeType } from './components/ShapePalette';
 import { nodeTypes } from './components/CustomNodes';
 import { listCanvases, getCanvas, createCanvas, saveCanvas, type CanvasSummary } from './services/canvases';
+import { useAuthStore } from './store/auth';
 
 // Initial nodes for demonstration
 const initialNodes = [
@@ -66,6 +67,8 @@ const FlowCanvas = () => {
   const [canvases, setCanvases] = React.useState<CanvasSummary[]>([]);
   const [activeCanvasId, setActiveCanvasId] = React.useState<string | null>(null);
   const [saveStatus, setSaveStatus] = React.useState<'saved' | 'saving' | 'error'>('saved');
+  const [menuOpen, setMenuOpen] = React.useState(false);
+  const logout = useAuthStore((s) => s.logout);
 
   // Handle text node size changes
   const handleTextNodeSizeChange = useCallback((nodeId: string, newSize: { width: number; height: number }) => {
@@ -299,70 +302,113 @@ const FlowCanvas = () => {
   return (
     <div className="h-screen w-screen bg-gray-50 flex flex-col">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
-        <h1 className="text-xl font-semibold text-gray-900">Mapin - Process Mapper</h1>
-        <div className="flex gap-2 items-center">
-          {/* Canvas selector */}
-          <select
-            className="border border-gray-300 rounded px-2 py-1 text-sm"
-            value={activeCanvasId ?? ''}
-            onChange={async (e) => {
-              const id = e.target.value || null;
-              setActiveCanvasId(id);
-              if (id) {
-                const data = await getCanvas(id);
-                if (data) {
-                  setNodes(data.nodes as Node[]);
-                  setEdges(data.edges as Edge[]);
+      <div className="bg-white border-b border-gray-200 px-4 py-3">
+        <div className="grid grid-cols-3 items-center">
+          {/* Left: Brand */}
+          <div className="justify-self-start">
+            <h1 className="text-xl font-semibold text-gray-900">Mapin - Process Mapper</h1>
+          </div>
+
+          {/* Center: Canvas selector */}
+          <div className="justify-self-center">
+            <select
+              className="border border-gray-300 rounded px-2 py-1 text-sm min-w-[200px]"
+              value={activeCanvasId ?? ''}
+              onChange={async (e) => {
+                const id = e.target.value || null;
+                setActiveCanvasId(id);
+                if (id) {
+                  const data = await getCanvas(id);
+                  if (data) {
+                    setNodes(data.nodes as Node[]);
+                    setEdges(data.edges as Edge[]);
+                  }
                 }
-              }
-            }}
-          >
-            {canvases.length === 0 && <option value="">No canvases</option>}
-            {canvases.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.title}
-              </option>
-            ))}
-          </select>
-          <button
-            onClick={async () => {
-              const title = prompt('Name your canvas', 'Untitled');
-              if (!title) return;
-              const id = await createCanvas(title);
-              const list = await listCanvases();
-              setCanvases(list);
-              setActiveCanvasId(id);
-              setNodes([]);
-              setEdges([]);
-            }}
-            className="px-3 py-1.5 text-sm bg-gray-200 text-gray-900 rounded hover:bg-gray-300"
-          >
-            New
-          </button>
-          <span className="text-xs text-gray-500">
-            {saveStatus === 'saving' && 'Saving…'}
-            {saveStatus === 'saved' && 'Saved'}
-            {saveStatus === 'error' && 'Save failed'}
-          </span>
-          <button
-            onClick={handleSave}
-            className="px-3 py-1.5 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
-          >
-            Save
-          </button>
-          <button
-            onClick={handleLoad}
-            className="px-3 py-1.5 text-sm bg-gray-600 text-white rounded hover:bg-gray-700"
-          >
-            Load
-          </button>
-          <button
-            onClick={handleReset}
-            className="px-3 py-1.5 text-sm bg-red-600 text-white rounded hover:bg-red-700"
-          >
-            Reset
-          </button>
+              }}
+            >
+              {canvases.length === 0 && <option value="">No canvases</option>}
+              {canvases.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.title}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Right: New, status, and menu */}
+          <div className="justify-self-end flex items-center gap-2 relative">
+            <button
+              onClick={async () => {
+                const title = prompt('Name your canvas', 'Untitled');
+                if (!title) return;
+                const id = await createCanvas(title);
+                const list = await listCanvases();
+                setCanvases(list);
+                setActiveCanvasId(id);
+                setNodes([]);
+                setEdges([]);
+              }}
+              className="px-3 py-1.5 text-sm bg-gray-200 text-gray-900 rounded hover:bg-gray-300"
+            >
+              New
+            </button>
+            <span className="text-xs text-gray-500 min-w-[60px] text-right">
+              {saveStatus === 'saving' && 'Saving…'}
+              {saveStatus === 'saved' && 'Saved'}
+              {saveStatus === 'error' && 'Save failed'}
+            </span>
+
+            {/* Actions dropdown */}
+            <div className="relative">
+              <button
+                onClick={() => setMenuOpen((v) => !v)}
+                className="px-3 py-1.5 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
+              >
+                Menu
+              </button>
+              {menuOpen && (
+                <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded shadow-lg z-50">
+                  <button
+                    className="w-full text-left px-3 py-2 text-sm hover:bg-gray-50"
+                    onClick={() => {
+                      setMenuOpen(false);
+                      handleSave();
+                    }}
+                  >
+                    Save
+                  </button>
+                  <button
+                    className="w-full text-left px-3 py-2 text-sm hover:bg-gray-50"
+                    onClick={() => {
+                      setMenuOpen(false);
+                      handleLoad();
+                    }}
+                  >
+                    Load
+                  </button>
+                  <button
+                    className="w-full text-left px-3 py-2 text-sm hover:bg-gray-50"
+                    onClick={() => {
+                      setMenuOpen(false);
+                      handleReset();
+                    }}
+                  >
+                    Reset
+                  </button>
+                  <div className="h-px bg-gray-200 my-1" />
+                  <button
+                    className="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-gray-50"
+                    onClick={() => {
+                      setMenuOpen(false);
+                      logout();
+                    }}
+                  >
+                    Logout
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
 
