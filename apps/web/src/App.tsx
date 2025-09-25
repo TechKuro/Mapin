@@ -16,6 +16,7 @@ import {
 import '@xyflow/react/dist/style.css';
 import ShapePalette, { type ShapeType } from './components/ShapePalette';
 import { nodeTypes } from './components/CustomNodes';
+import { listCanvases, getCanvas, createCanvas, saveCanvas, type CanvasSummary } from './services/canvases';
 
 // Initial nodes for demonstration
 const initialNodes = [
@@ -62,6 +63,9 @@ const FlowCanvas = () => {
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const { screenToFlowPosition } = useReactFlow();
   const reactFlowInstance = useReactFlow();
+  const [canvases, setCanvases] = React.useState<CanvasSummary[]>([]);
+  const [activeCanvasId, setActiveCanvasId] = React.useState<string | null>(null);
+  const [saveStatus, setSaveStatus] = React.useState<'saved' | 'saving' | 'error'>('saved');
 
   // Handle text node size changes
   const handleTextNodeSizeChange = useCallback((nodeId: string, newSize: { width: number; height: number }) => {
@@ -85,6 +89,41 @@ const FlowCanvas = () => {
     redoStack.current = [];
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [nodes, edges]);
+
+  // Load canvas list & default canvas
+  React.useEffect(() => {
+    (async () => {
+      try {
+        const list = await listCanvases();
+        setCanvases(list);
+        if (list.length) {
+          setActiveCanvasId(list[0].id);
+          const data = await getCanvas(list[0].id);
+          if (data) {
+            setNodes(data.nodes as Node[]);
+            setEdges(data.edges as Edge[]);
+          }
+        }
+      } catch (_) {
+        // noop
+      }
+    })();
+  }, [setNodes, setEdges]);
+
+  // Debounced autosave when nodes/edges change
+  React.useEffect(() => {
+    if (!activeCanvasId) return;
+    setSaveStatus('saving');
+    const h = setTimeout(async () => {
+      try {
+        await saveCanvas(activeCanvasId, { nodes, edges });
+        setSaveStatus('saved');
+      } catch (_) {
+        setSaveStatus('error');
+      }
+    }, 800);
+    return () => clearTimeout(h);
+  }, [nodes, edges, activeCanvasId]);
 
   const undo = () => {
     if (undoStack.current.length > 1) {
@@ -262,7 +301,50 @@ const FlowCanvas = () => {
       {/* Header */}
       <div className="bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
         <h1 className="text-xl font-semibold text-gray-900">Mapin - Process Mapper</h1>
-        <div className="flex gap-2">
+        <div className="flex gap-2 items-center">
+          {/* Canvas selector */}
+          <select
+            className="border border-gray-300 rounded px-2 py-1 text-sm"
+            value={activeCanvasId ?? ''}
+            onChange={async (e) => {
+              const id = e.target.value || null;
+              setActiveCanvasId(id);
+              if (id) {
+                const data = await getCanvas(id);
+                if (data) {
+                  setNodes(data.nodes as Node[]);
+                  setEdges(data.edges as Edge[]);
+                }
+              }
+            }}
+          >
+            {canvases.length === 0 && <option value="">No canvases</option>}
+            {canvases.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.title}
+              </option>
+            ))}
+          </select>
+          <button
+            onClick={async () => {
+              const title = prompt('Name your canvas', 'Untitled');
+              if (!title) return;
+              const id = await createCanvas(title);
+              const list = await listCanvases();
+              setCanvases(list);
+              setActiveCanvasId(id);
+              setNodes([]);
+              setEdges([]);
+            }}
+            className="px-3 py-1.5 text-sm bg-gray-200 text-gray-900 rounded hover:bg-gray-300"
+          >
+            New
+          </button>
+          <span className="text-xs text-gray-500">
+            {saveStatus === 'saving' && 'Saving…'}
+            {saveStatus === 'saved' && 'Saved'}
+            {saveStatus === 'error' && 'Save failed'}
+          </span>
           <button
             onClick={handleSave}
             className="px-3 py-1.5 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
