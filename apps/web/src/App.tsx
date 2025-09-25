@@ -423,7 +423,7 @@ const FlowCanvas = () => {
                       }
                     }}
                   >
-                    Delete canvas
+                    Delete Canvas
                   </button>
                   <div className="h-px bg-gray-200 my-1" />
                   <button
