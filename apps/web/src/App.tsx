@@ -16,7 +16,7 @@ import {
 import '@xyflow/react/dist/style.css';
 import ShapePalette, { type ShapeType } from './components/ShapePalette';
 import { nodeTypes } from './components/CustomNodes';
-import { listCanvases, getCanvas, createCanvas, saveCanvas, type CanvasSummary } from './services/canvases';
+import { listCanvases, getCanvas, createCanvas, saveCanvas, deleteCanvas, type CanvasSummary } from './services/canvases';
 import { useAuthStore } from './store/auth';
 
 // Initial nodes for demonstration
@@ -394,6 +394,36 @@ const FlowCanvas = () => {
                     }}
                   >
                     Reset
+                  </button>
+                  <button
+                    className="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-gray-50"
+                    onClick={async () => {
+                      if (!activeCanvasId) return;
+                      const ok = confirm('Delete this canvas? This cannot be undone.');
+                      if (!ok) return;
+                      try {
+                        await deleteCanvas(activeCanvasId);
+                        const list = await listCanvases();
+                        setCanvases(list);
+                        if (list.length > 0) {
+                          const nextId = list[0].id;
+                          setActiveCanvasId(nextId);
+                          const data = await getCanvas(nextId);
+                          setNodes((data?.nodes as Node[]) ?? []);
+                          setEdges((data?.edges as Edge[]) ?? []);
+                        } else {
+                          setActiveCanvasId(null);
+                          setNodes([]);
+                          setEdges([]);
+                        }
+                      } catch (_) {
+                        // no-op
+                      } finally {
+                        setMenuOpen(false);
+                      }
+                    }}
+                  >
+                    Delete canvas
                   </button>
                   <div className="h-px bg-gray-200 my-1" />
                   <button
